@@ -10,3 +10,4 @@ wheel
 celery
 redis
 python-dotenv
+qrcode
