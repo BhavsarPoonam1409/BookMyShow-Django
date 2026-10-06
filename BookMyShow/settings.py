@@ -105,7 +105,7 @@ DATABASES = {
 
 DATABASES = {
     'default': dj_database_url.parse(
-        'postgresql://django_bookmyshow_mbyq_user:eyqjPd9YgM1Mz0SuSU7DQQBi1kgK74Ic@dpg-db2eulu7bikc73dhsl10-a/django_bookmyshow_mbyq'
+        'postgresql://django_bookmyshow_mbyq_user:eyqjPd9YgM1Mz0SuSU7DQQBi1kgK74Ic@dpg-db2eulu7bikc73dhsl10-a.ohio-postgres.render.com/django_bookmyshow_mbyq'
     )
 }
 
