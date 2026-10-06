@@ -1,0 +1,230 @@
+{% extends "users/basic.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h3 class="text-center">
+        {{ theater.movie.name }} - {{ theater.name }} |
+        {{ theater.time }}
+    </h3>
+
+
+    <!-- Seat Status -->
+
+    <div class="text-center mb-4">
+
+        <span class="mr-3">
+            🟢 Available
+        </span>
+
+        <span class="mr-3">
+            🟡 Reserved
+        </span>
+
+        <span>
+            🔴 Booked
+        </span>
+
+    </div>
+
+
+    <form
+        method="POST"
+        action="{% url 'book_seats' theater.id %}"
+    >
+
+        {% csrf_token %}
+
+
+        <div class="d-flex justify-content-center flex-wrap mb-4">
+
+            {% for seat in seats %}
+
+
+                {% if seat.is_booked %}
+
+                    <!-- Booked Seat -->
+
+                    <div class="seat">
+
+                        <span class="seat-label booked">
+                            {{ seat.seat_number }}
+                        </span>
+
+                    </div>
+
+
+                {% elif seat.is_reserved and seat.reserved_by != user %}
+
+                    <!-- Reserved Seat -->
+
+                    <div class="seat">
+
+                        <span class="seat-label reserved">
+                            {{ seat.seat_number }}
+                        </span>
+
+                    </div>
+
+
+                {% else %}
+
+                    <!-- Available Seat -->
+
+                    <div class="seat">
+
+                        <input
+                            type="checkbox"
+                            name="seats"
+                            value="{{ seat.id }}"
+                            id="seat-{{ seat.id }}"
+                            class="seat-checkbox"
+                        >
+
+
+                        <label
+                            for="seat-{{ seat.id }}"
+                            class="seat-label available"
+                        >
+                            {{ seat.seat_number }}
+                        </label>
+
+                    </div>
+
+                {% endif %}
+
+
+            {% endfor %}
+
+        </div>
+
+
+        {% if error %}
+
+            <p class="text-center text-danger">
+                {{ error }}
+            </p>
+
+        {% endif %}
+
+
+        <div class="text-center">
+
+            <button
+                type="submit"
+                class="btn btn-success btn-lg"
+            >
+                Reserve Selected Seats
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<style>
+
+.seat {
+    display: inline-block;
+    margin: 5px;
+}
+
+
+/* Hide actual checkbox */
+
+.seat-checkbox {
+    display: none;
+}
+
+
+/* Common seat design */
+
+.seat-label {
+
+    width: 45px;
+    height: 45px;
+
+    border: 2px solid;
+
+    text-align: center;
+    line-height: 45px;
+
+    border-radius: 6px;
+
+    display: inline-block;
+
+    font-weight: bold;
+
+    transition: 0.3s;
+
+}
+
+
+/* Available seat */
+
+.available {
+
+    border-color: #28a745;
+
+    color: #28a745;
+
+    cursor: pointer;
+
+}
+
+
+/* Selected seat */
+
+.seat-checkbox:checked + .seat-label {
+
+    background-color: #28a745;
+
+    color: white;
+
+}
+
+
+/* Hover on available seat */
+
+.available:hover {
+
+    background-color: #d4edda;
+
+}
+
+
+/* Reserved seat */
+
+.reserved {
+
+    background-color: #ffc107;
+
+    border-color: #ffc107;
+
+    color: #856404;
+
+    cursor: not-allowed;
+
+}
+
+
+/* Booked seat */
+
+.booked {
+
+    background-color: #dc3545;
+
+    border-color: #dc3545;
+
+    color: white;
+
+    cursor: not-allowed;
+
+}
+
+</style>
+
+{% endblock %}

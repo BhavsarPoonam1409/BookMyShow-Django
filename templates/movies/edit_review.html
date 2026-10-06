@@ -1,0 +1,74 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Review</title>
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <link
+        rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    >
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+    <h3>✏️ Edit Your Review</h3>
+
+    <div class="card p-4 mt-3">
+
+        <h5>{{ review.movie.name }}</h5>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="{{ review_form.rating.id_for_label }}">
+                    Rating
+                </label>
+
+                {{ review_form.rating }}
+
+                {% if review_form.rating.errors %}
+                    <small class="text-danger">
+                        {{ review_form.rating.errors }}
+                    </small>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ review_form.review_text.id_for_label }}">
+                    Review
+                </label>
+
+                {{ review_form.review_text }}
+
+                {% if review_form.review_text.errors %}
+                    <small class="text-danger">
+                        {{ review_form.review_text.errors }}
+                    </small>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Update Review
+            </button>
+
+            <a
+                href="{% url 'movie_detail' review.movie.id %}#reviews"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,540 @@
+{% extends "users/basic.html" %}
+
+{% block content %}
+
+{% if messages %}
+
+    {% for message in messages %}
+
+        <div class="alert alert-success mt-3">
+            {{ message }}
+        </div>
+
+    {% endfor %}
+
+{% endif %}
+
+
+<div class="container py-5">
+
+    <div class="row">
+
+        <div class="col-md-4">
+
+            <img
+                src="{{ movie.image.url }}"
+                class="img-fluid rounded"
+                alt="{{ movie.name }}"
+            >
+
+        </div>
+
+
+        <div class="col-md-8">
+
+            <h1>{{ movie.name }}</h1>
+
+            <p>
+                ⭐ Rating: {{ movie.rating }}
+            </p>
+
+
+            <p>
+                👥 Cast:
+
+                {% for cast_member in movie.cast.all %}
+
+                    {{ cast_member.name }}{% if not forloop.last %}, {% endif %}
+
+                {% empty %}
+
+                    Not Available
+
+                {% endfor %}
+
+            </p>
+
+
+            <p>
+                🎭 Genre:
+
+                {% for genre in movie.genre.all %}
+
+                    {{ genre.name }}{% if not forloop.last %}, {% endif %}
+
+                {% empty %}
+
+                    Not Available
+
+                {% endfor %}
+
+            </p>
+
+
+            <p>
+                🌐 Language:
+
+                {% for language in movie.language.all %}
+
+                    {{ language.name }}{% if not forloop.last %}, {% endif %}
+
+                {% empty %}
+
+                    Not Available
+
+                {% endfor %}
+
+            </p>
+
+
+            <p>
+                🎬 Age Certification:
+
+                {{ movie.age_certification|default:"Not Available" }}
+
+            </p>
+
+
+            <p>
+                ⏱ Duration:
+
+                {% if movie.duration %}
+
+                    {{ movie.duration }} minutes
+
+                {% else %}
+
+                    Not Available
+
+                {% endif %}
+
+            </p>
+
+
+            <p>
+                📅 Release Date:
+
+                {{ movie.release_date|default:"Not Available" }}
+            </p>
+
+
+            <h4>Description</h4>
+
+            <p>
+                {{ movie.description|default:"No description available." }}
+            </p>
+
+
+            {% if trailer_embed_url %}
+
+                <h4 class="mt-4">🎬 Trailer</h4>
+
+                <div class="embed-responsive embed-responsive-16by9">
+
+                    <iframe
+                        class="embed-responsive-item"
+                        src="{{ trailer_embed_url }}"
+                        title="{{ movie.name }} Trailer"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <hr>
+
+
+    <h3 class="mt-4">More Posters</h3>
+
+
+    <div class="row">
+
+        {% for poster in movie.posters.all %}
+
+            <div class="col-md-3 mb-3">
+
+                <img
+                    src="{{ poster.image.url }}"
+                    class="img-fluid rounded"
+                    alt="{{ movie.name }} poster"
+                >
+
+            </div>
+
+        {% empty %}
+
+            <p>No additional posters available.</p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+<hr>
+
+
+<!-- Similar Movies -->
+
+<h3 class="mt-4">🎬 Similar Movies</h3>
+
+
+<div class="row">
+
+    {% for similar_movie in similar_movies %}
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card h-100">
+
+                <img
+                    src="{{ similar_movie.image.url }}"
+                    class="card-img-top"
+                    alt="{{ similar_movie.name }}"
+                >
+
+
+                <div class="card-body">
+
+                    <h5 class="card-title">
+                        {{ similar_movie.name }}
+                    </h5>
+
+
+                    <p class="card-text">
+                        ⭐ {{ similar_movie.rating }}
+                    </p>
+
+
+                    <a
+                        href="{% url 'movie_detail' similar_movie.id %}"
+                        class="btn btn-outline-primary"
+                    >
+                        View Details
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    {% empty %}
+
+        <p class="text-muted">
+            No similar movies available.
+        </p>
+
+    {% endfor %}
+
+</div>
+
+
+<hr>
+
+
+<!-- Trending Movies -->
+
+<h3 class="mt-4">🔥 Trending Movies</h3>
+
+
+<div class="row">
+
+    {% for trending_movie in trending_movies %}
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card h-100">
+
+                <img
+                    src="{{ trending_movie.image.url }}"
+                    class="card-img-top"
+                    alt="{{ trending_movie.name }}"
+                >
+
+
+                <div class="card-body">
+
+                    <h5 class="card-title">
+                        {{ trending_movie.name }}
+                    </h5>
+
+
+                    <p class="card-text">
+                        ⭐ {{ trending_movie.rating }}
+                    </p>
+
+
+                    <a
+                        href="{% url 'movie_detail' trending_movie.id %}"
+                        class="btn btn-outline-primary"
+                    >
+                        View Details
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        
+
+
+    {% empty %}
+
+        <p class="text-muted">
+            No trending movies available.
+        </p>
+
+    {% endfor %}
+
+</div>
+
+<hr>
+
+<!-- Recently Released Movies -->
+
+<h3 class="mt-4">🆕 Recently Released Movies</h3>
+
+<div class="row">
+
+    {% for recent_movie in recently_released %}
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card h-100">
+
+                <img
+                    src="{{ recent_movie.image.url }}"
+                    class="card-img-top"
+                    alt="{{ recent_movie.name }}"
+                >
+
+                <div class="card-body">
+
+                    <h5 class="card-title">
+                        {{ recent_movie.name }}
+                    </h5>
+
+                    <p class="card-text">
+                        ⭐ {{ recent_movie.rating }}
+                    </p>
+
+                    <p class="card-text">
+                        📅 {{ recent_movie.release_date }}
+                    </p>
+
+                    <a
+                        href="{% url 'movie_detail' recent_movie.id %}"
+                        class="btn btn-outline-primary"
+                    >
+                        View Details
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    {% empty %}
+
+        <p class="text-muted">
+            No recently released movies available.
+        </p>
+
+    {% endfor %}
+
+</div>
+
+
+
+<!-- Ratings and Reviews -->
+
+<h3 id="reviews" class="mt-4">
+    ⭐ Ratings & Reviews
+</h3>
+
+
+{% if can_review %}
+
+    <div class="card p-4 mt-3">
+
+        <h5>Write a Review</h5>
+
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+            <div class="form-group">
+
+                <label for="{{ review_form.rating.id_for_label }}">
+                    Rating
+                </label>
+
+
+                {{ review_form.rating }}
+
+
+                {% if review_form.rating.errors %}
+
+                    <small class="text-danger">
+                        {{ review_form.rating.errors }}
+                    </small>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ review_form.review_text.id_for_label }}">
+                    Review
+                </label>
+
+
+                {{ review_form.review_text }}
+
+
+                {% if review_form.review_text.errors %}
+
+                    <small class="text-danger">
+                        {{ review_form.review_text.errors }}
+                    </small>
+
+                {% endif %}
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Submit Review
+            </button>
+
+        </form>
+
+    </div>
+
+
+{% elif user.is_authenticated %}
+
+    <p class="text-muted mt-3">
+        You can submit a review after watching this movie.
+    </p>
+
+
+{% else %}
+
+    <p class="text-muted mt-3">
+        Please login to submit a review.
+    </p>
+
+{% endif %}
+
+
+<h4 class="mt-5">
+    User Reviews
+</h4>
+
+
+{% for review in reviews %}
+
+    <div class="card p-3 mt-3">
+
+
+        <h6>
+
+            {{ review.user.username }}
+
+
+            {% if review.is_verified_viewer %}
+
+                <span class="badge badge-success">
+                    Verified Viewer
+                </span>
+
+            {% endif %}
+
+        </h6>
+
+
+        <p>
+            ⭐ {{ review.rating }}/5
+        </p>
+
+
+        <p>
+            {{ review.review_text }}
+        </p>
+
+
+        {% if user.is_authenticated and review.user == user %}
+
+            <a
+                href="{% url 'edit_review' review.id %}"
+                class="btn btn-outline-primary btn-sm mt-2"
+            >
+                ✏️ Edit Review
+            </a>
+
+        {% endif %}
+
+
+        {% if user.is_authenticated and review.user != user %}
+
+            <form
+                method="POST"
+                action="{% url 'report_review' review.id %}"
+                style="display: inline;"
+            >
+
+                {% csrf_token %}
+
+
+                <button
+                    type="submit"
+                    class="btn btn-outline-danger btn-sm mt-2"
+                >
+                    🚩 Report Review
+                </button>
+
+            </form>
+
+        {% endif %}
+
+
+        <small class="text-muted">
+            {{ review.created_at }}
+        </small>
+
+
+    </div>
+
+
+{% empty %}
+
+    <p class="text-muted mt-3">
+        No reviews yet.
+    </p>
+
+{% endfor %}
+
+
+{% endblock %}

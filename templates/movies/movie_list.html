@@ -1,0 +1,816 @@
+{% extends "users/basic.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <h1 class="text-center mb-5">Movies</h1>
+
+    <!-- Search and Filters -->
+    <div class="row justify-content-center mb-5">
+
+        <div class="col-md-10">
+
+            <form method="GET" action="{% url 'movie_list' %}">
+
+                <!-- Search -->
+                <div class="input-group mb-4">
+
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control form-control-lg"
+                        placeholder="Search for Movies"
+                        value="{{ search_query }}"
+                    >
+
+                    <div class="input-group-append">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            <i class="fas fa-search"></i>
+                            Search
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <!-- First Row -->
+                <div class="row">
+
+                    <!-- Genre -->
+                    <div class="col-md-4 mb-3">
+
+                        <label>
+                            <strong>Genre</strong>
+                        </label>
+
+                        <select
+                            name="genre"
+                            class="form-control"
+                        >
+
+                            <option value="">
+                                All Genres
+                            </option>
+
+                            {% for genre in genres %}
+
+                            <option
+                                value="{{ genre.id }}"
+                                {% if genre_id == genre.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ genre.name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <!-- Language -->
+                    <div class="col-md-4 mb-3">
+
+                        <label>
+                            <strong>Language</strong>
+                        </label>
+
+                        <select
+                            name="language"
+                            class="form-control"
+                        >
+
+                            <option value="">
+                                All Languages
+                            </option>
+
+                            {% for language in languages %}
+
+                            <option
+                                value="{{ language.id }}"
+                                {% if language_id == language.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ language.name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <!-- City -->
+                    <div class="col-md-4 mb-3">
+
+                        <label>
+                            <strong>City</strong>
+                        </label>
+
+                        <select
+                            name="city"
+                            class="form-control"
+                        >
+
+                            <option value="">
+                                All Cities
+                            </option>
+
+                            {% for city_name in cities %}
+
+                            <option
+                                value="{{ city_name }}"
+                                {% if city == city_name %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ city_name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- Second Row -->
+                <div class="row">
+
+                    <!-- Theater -->
+                    <div class="col-md-4 mb-3">
+
+                        <label>
+                            <strong>Theater</strong>
+                        </label>
+
+                        <select
+                            name="theater"
+                            class="form-control"
+                        >
+
+                            <option value="">
+                                All Theaters
+                            </option>
+
+                            {% for theater in theaters %}
+
+                            <option
+                                value="{{ theater.id }}"
+                                {% if theater_id == theater.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ theater.name }} - {{ theater.city }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <!-- Release Date -->
+                    <div class="col-md-4 mb-3">
+
+                        <label>
+                            <strong>Release Date</strong>
+                        </label>
+
+                        <input
+                            type="date"
+                            name="release_date"
+                            class="form-control"
+                            value="{{ release_date }}"
+                        >
+
+                    </div>
+
+                    <!-- Minimum Rating -->
+                    <div class="col-md-4 mb-3">
+
+                        <label>
+                            <strong>Minimum Rating</strong>
+                        </label>
+
+                        <select
+                            name="min_rating"
+                            class="form-control"
+                        >
+
+                            <option value="">
+                                Any Rating
+                            </option>
+
+                            <option
+                                value="9"
+                                {% if min_rating == "9" %}selected{% endif %}
+                            >
+                                9+
+                            </option>
+
+                            <option
+                                value="8"
+                                {% if min_rating == "8" %}selected{% endif %}
+                            >
+                                8+
+                            </option>
+
+                            <option
+                                value="7"
+                                {% if min_rating == "7" %}selected{% endif %}
+                            >
+                                7+
+                            </option>
+
+                            <option
+                                value="6"
+                                {% if min_rating == "6" %}selected{% endif %}
+                            >
+                                6+
+                            </option>
+
+                            <option
+                                value="5"
+                                {% if min_rating == "5" %}selected{% endif %}
+                            >
+                                5+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- Third Row -->
+                <div class="row">
+
+                    <!-- Show Date -->
+                    <div class="col-md-4 mb-3">
+
+                        <label>
+                            <strong>Show Date</strong>
+                        </label>
+
+                        <input
+                            type="date"
+                            name="show_date"
+                            class="form-control"
+                            value="{{ show_date }}"
+                        >
+
+                    </div>
+
+                    <!-- Sort -->
+                    <div class="col-md-4 mb-3">
+
+                        <label>
+                            <strong>Sort By</strong>
+                        </label>
+
+                        <select
+                            name="sort"
+                            class="form-control"
+                        >
+
+                            <option
+                                value="name"
+                                {% if sort_by == "name" %}selected{% endif %}
+                            >
+                                Movie Name
+                            </option>
+
+                            <option
+                                value="popularity"
+                                {% if sort_by == "popularity" %}selected{% endif %}
+                            >
+                                Popularity
+                            </option>
+
+                            <option
+                                value="newest"
+                                {% if sort_by == "newest" %}selected{% endif %}
+                            >
+                                Newest Releases
+                            </option>
+
+                            <option
+                                value="rating"
+                                {% if sort_by == "rating" %}selected{% endif %}
+                            >
+                                Highest Rating
+                            </option>
+
+                            <option
+                                value="price_low"
+                                {% if sort_by == "price_low" %}selected{% endif %}
+                            >
+                                Price: Low to High
+                            </option>
+
+                            <option
+                                value="price_high"
+                                {% if sort_by == "price_high" %}selected{% endif %}
+                            >
+                                Price: High to Low
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- Buttons -->
+                <div class="text-center mt-3">
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                    >
+                        Apply Filters
+                    </button>
+
+                    <a
+                        href="{% url 'movie_list' %}"
+                        class="btn btn-secondary"
+                    >
+                        Clear Filters
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- Movie Count -->
+    <div class="text-center mb-4">
+
+        <h5>
+            {{ page_obj.paginator.count }} Movies Found
+        </h5>
+
+    </div>
+
+    <!-- Movie List -->
+    <div class="row">
+
+        {% for movie in movies %}
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card h-100 shadow-sm">
+
+                <img
+                    src="{{ movie.image.url }}"
+                    class="card-img-top"
+                    alt="{{ movie.name }}"
+                    style="height: 380px; object-fit: cover;"
+                >
+
+                <div class="card-body">
+
+                    <h4 class="card-title">
+                        {{ movie.name }}
+                    </h4>
+
+                    <p class="card-text">
+
+                        <i class="fas fa-star text-warning"></i>
+
+                        {{ movie.rating }}
+
+                    </p>
+
+                    <p class="card-text">
+
+                        <i class="fas fa-users"></i>
+
+                        <strong>Cast:</strong>
+
+                        {% for cast_member in movie.cast.all %}
+
+                            {{ cast_member.name }}{% if not forloop.last %}, {% endif %}
+
+                        {% empty %}
+
+                            Not Available
+
+                        {% endfor %}
+
+                    </p>
+
+                    {% with first_theater=movie.theaters.all|first %}
+
+                        {% if first_theater %}
+
+                        <p class="card-text">
+
+                            <i class="fas fa-map-marker-alt"></i>
+
+                            <strong>City:</strong>
+
+                            {{ first_theater.city }}
+
+                        </p>
+
+                        {% endif %}
+
+                    {% endwith %}
+
+                    <p class="card-text">
+
+                        <i class="fas fa-ticket-alt"></i>
+
+                        <strong>Ticket Price:</strong>
+
+                        {% if movie.lowest_ticket_price %}
+
+                            ₹{{ movie.lowest_ticket_price }}
+
+                        {% else %}
+
+                            Not Available
+
+                        {% endif %}
+
+                    </p>
+
+                    <p class="card-text">
+
+                        <i class="fas fa-fire"></i>
+
+                        <strong>Bookings:</strong>
+
+                        {{ movie.booking_count }}
+
+                    </p>
+
+                    {% if movie.release_date %}
+
+                    <p class="card-text">
+
+                        <i class="fas fa-calendar-alt"></i>
+
+                        <strong>Release:</strong>
+
+                        {{ movie.release_date|date:"M. d, Y" }}
+
+                    </p>
+
+                    {% endif %}
+
+                    {% if movie.age_certification %}
+
+                    <p class="card-text">
+
+                        <i class="fas fa-film"></i>
+
+                        <strong>Certificate:</strong>
+
+                        {{ movie.age_certification }}
+
+                    </p>
+
+                    {% endif %}
+
+                    {% if movie.duration %}
+
+                    <p class="card-text">
+
+                        <i class="fas fa-clock"></i>
+
+                        <strong>Duration:</strong>
+
+                        {{ movie.duration }} minutes
+
+                    </p>
+
+                    {% endif %}
+
+                </div>
+
+                <div class="card-footer bg-white border-top-0">
+
+                    <a
+                        href="{% url 'movie_detail' movie.id %}"
+                        class="btn btn-info btn-block mb-2"
+                    >
+                        View Details
+                    </a>
+
+                    <a
+                        href="{% url 'theater_list' movie.id %}"
+                        class="btn btn-outline-primary btn-block"
+                    >
+                        View Theaters
+
+                        <i class="fas fa-chevron-right ml-2"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <div class="col-12 text-center">
+
+            <p class="lead">
+                No movies found.
+                Try a different search or filter.
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+
+    <div class="text-center mt-4 mb-5">
+
+        {% if page_obj.has_previous %}
+
+        <a
+            href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}{% if genre_id %}&genre={{ genre_id }}{% endif %}{% if language_id %}&language={{ language_id }}{% endif %}{% if city %}&city={{ city|urlencode }}{% endif %}{% if theater_id %}&theater={{ theater_id }}{% endif %}{% if release_date %}&release_date={{ release_date }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}{% if show_date %}&show_date={{ show_date }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}"
+            class="btn btn-outline-primary"
+        >
+            <i class="fas fa-chevron-left"></i>
+            Previous
+        </a>
+
+        {% endif %}
+
+        <span class="mx-3">
+
+            Page
+            <strong>{{ page_obj.number }}</strong>
+            of
+            <strong>{{ page_obj.paginator.num_pages }}</strong>
+
+        </span>
+
+        {% if page_obj.has_next %}
+
+        <a
+            href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}{% if genre_id %}&genre={{ genre_id }}{% endif %}{% if language_id %}&language={{ language_id }}{% endif %}{% if city %}&city={{ city|urlencode }}{% endif %}{% if theater_id %}&theater={{ theater_id }}{% endif %}{% if release_date %}&release_date={{ release_date }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}{% if show_date %}&show_date={{ show_date }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}"
+            class="btn btn-outline-primary"
+        >
+            Next
+            <i class="fas fa-chevron-right"></i>
+        </a>
+
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ================================================== -->
+    <!-- RECENTLY VIEWED MOVIES -->
+    <!-- ================================================== -->
+
+    {% if recently_viewed_movies %}
+
+    <div class="mt-5 pt-4">
+
+        <h2 class="text-center mb-4">
+            Recently Viewed
+        </h2>
+
+        <p class="text-center text-muted mb-4">
+            Movies you recently viewed
+        </p>
+
+        <div class="row">
+
+            {% for movie in recently_viewed_movies %}
+
+            <div class="col-md-4 mb-4">
+
+                <div class="card h-100 shadow-sm">
+
+                    <img
+                        src="{{ movie.image.url }}"
+                        class="card-img-top"
+                        alt="{{ movie.name }}"
+                        style="height: 300px; object-fit: cover;"
+                    >
+
+                    <div class="card-body">
+
+                        <h5 class="card-title">
+                            {{ movie.name }}
+                        </h5>
+
+                        <p class="card-text">
+
+                            <i class="fas fa-star text-warning"></i>
+
+                            {{ movie.rating }}
+
+                        </p>
+
+                        <p class="card-text">
+
+                            <strong>Cast:</strong>
+
+                            {% for cast_member in movie.cast.all %}
+
+                                {{ cast_member.name }}{% if not forloop.last %}, {% endif %}
+
+                            {% empty %}
+
+                                Not Available
+
+                            {% endfor %}
+
+                        </p>
+
+                    </div>
+
+                    <div class="card-footer bg-white border-top-0">
+
+                        <a
+                            href="{% url 'movie_detail' movie.id %}"
+                            class="btn btn-info btn-block"
+                        >
+                            View Details
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ================================================== -->
+    <!-- RECOMMENDED FOR YOU -->
+    <!-- ================================================== -->
+
+    {% if recommended_movies %}
+
+    <div class="mt-5 pt-4">
+
+        <h2 class="text-center mb-4">
+            Recommended For You
+        </h2>
+
+        <p class="text-center text-muted mb-4">
+            Movies recommended based on your booking history
+            and recently viewed movies.
+        </p>
+
+        <div class="row">
+
+            {% for movie in recommended_movies %}
+
+            <div class="col-md-4 mb-4">
+
+                <div class="card h-100 shadow-sm">
+
+                    <img
+                        src="{{ movie.image.url }}"
+                        class="card-img-top"
+                        alt="{{ movie.name }}"
+                        style="height: 300px; object-fit: cover;"
+                    >
+
+                    <div class="card-body">
+
+                        <h5 class="card-title">
+                            {{ movie.name }}
+                        </h5>
+
+                        <p class="card-text">
+
+                            <i class="fas fa-star text-warning"></i>
+
+                            {{ movie.rating }}
+
+                        </p>
+
+                        <p class="card-text">
+
+                            <i class="fas fa-users"></i>
+
+                            <strong>Cast:</strong>
+
+                            {% for cast_member in movie.cast.all %}
+
+                                {{ cast_member.name }}{% if not forloop.last %}, {% endif %}
+
+                            {% empty %}
+
+                                Not Available
+
+                            {% endfor %}
+
+                        </p>
+
+                        {% if movie.release_date %}
+
+                        <p class="card-text">
+
+                            <i class="fas fa-calendar-alt"></i>
+
+                            <strong>Release:</strong>
+
+                            {{ movie.release_date|date:"M. d, Y" }}
+
+                        </p>
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="card-footer bg-white border-top-0">
+
+                        <a
+                            href="{% url 'movie_detail' movie.id %}"
+                            class="btn btn-info btn-block"
+                        >
+                            View Details
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- Bootstrap JS -->
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+<!-- Font Awesome -->
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+>
+
+
+<style>
+
+.card {
+    transition:
+        transform 0.3s ease-in-out,
+        box-shadow 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+</style>
+
+{% endblock %}

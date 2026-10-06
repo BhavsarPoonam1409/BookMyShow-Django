@@ -1,0 +1,823 @@
+{% extends 'users/basic.html' %}
+
+{% block content %}
+
+<style>
+
+    body {
+        background: #f5f6fa;
+    }
+
+    .dashboard-container {
+        padding: 30px;
+    }
+
+    .dashboard-title {
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .dashboard-subtitle {
+        color: #777;
+        margin-bottom: 25px;
+    }
+
+    .filter-card,
+    .dashboard-section,
+    .summary-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+
+    .filter-card {
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    .filter-card h5 {
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .filter-btn {
+        background: #dc3545;
+        border: none;
+        color: white;
+        padding: 9px 22px;
+        border-radius: 6px;
+    }
+
+    .summary-card {
+        padding: 20px;
+        margin-bottom: 20px;
+        height: 100%;
+    }
+
+    .summary-title {
+        color: #777;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .summary-value {
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .dashboard-section {
+        padding: 22px;
+        margin-top: 25px;
+    }
+
+    .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 18px;
+    }
+
+    .dashboard-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .dashboard-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        padding: 12px;
+        text-align: left;
+    }
+
+    .dashboard-table td {
+        padding: 12px;
+        border-top: 1px solid #eee;
+    }
+
+    .selected-result {
+        background: #fff5f5;
+        border-left: 4px solid #dc3545;
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .export-btn {
+        display: inline-block;
+        background: #212529;
+        color: white !important;
+        padding: 10px 18px;
+        border-radius: 6px;
+        text-decoration: none;
+    }
+
+    .export-btn:hover {
+        background: #343a40;
+        text-decoration: none;
+    }
+
+</style>
+
+
+<div class="container-fluid dashboard-container">
+
+    <!-- ========================= -->
+    <!-- DASHBOARD HEADER -->
+    <!-- ========================= -->
+
+    <h2 class="dashboard-title">
+        Admin Dashboard
+    </h2>
+
+    <p class="dashboard-subtitle">
+        Monitor bookings, revenue and business performance
+    </p>
+
+
+    <!-- ========================= -->
+    <!-- CUSTOM DATE FILTER -->
+    <!-- ========================= -->
+
+    <div class="filter-card">
+
+        <h5>
+            Custom Date Filter
+        </h5>
+
+        <form method="GET">
+
+            <div class="row">
+
+                <div class="col-md-4">
+
+                    <label>
+                        From Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="from_date"
+                        value="{{ from_date|default:'' }}"
+                        class="form-control"
+                    >
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <label>
+                        To Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="to_date"
+                        value="{{ to_date|default:'' }}"
+                        class="form-control"
+                    >
+
+                </div>
+
+
+                <div class="col-md-4 d-flex align-items-end">
+
+                    <button
+                        type="submit"
+                        class="filter-btn"
+                    >
+                        Apply Filter
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- OVERALL BUSINESS SUMMARY -->
+    <!-- ========================= -->
+
+    <h4 class="section-title">
+        Overall Business Summary
+    </h4>
+
+    <div class="row">
+
+
+        <div class="col-md-4 col-lg-2">
+
+            <div class="summary-card">
+
+                <div class="summary-title">
+                    Total Revenue
+                </div>
+
+                <div class="summary-value">
+                    ₹{{ total_revenue }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4 col-lg-2">
+
+            <div class="summary-card">
+
+                <div class="summary-title">
+                    Total Bookings
+                </div>
+
+                <div class="summary-value">
+                    {{ total_bookings }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4 col-lg-2">
+
+            <div class="summary-card">
+
+                <div class="summary-title">
+                    Total Movies
+                </div>
+
+                <div class="summary-value">
+                    {{ total_movies }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4 col-lg-2">
+
+            <div class="summary-card">
+
+                <div class="summary-title">
+                    Total Users
+                </div>
+
+                <div class="summary-value">
+                    {{ total_users }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4 col-lg-2">
+
+            <div class="summary-card">
+
+                <div class="summary-title">
+                    Total Theaters
+                </div>
+
+                <div class="summary-value">
+                    {{ total_theaters }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- REVENUE REPORTS -->
+    <!-- ========================= -->
+
+    <div class="dashboard-section">
+
+        <h4 class="section-title">
+            Revenue Reports
+        </h4>
+
+        <table class="dashboard-table">
+
+            <thead>
+
+                <tr>
+                    <th>Period</th>
+                    <th>Revenue</th>
+                    <th>Bookings</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>Today</td>
+                    <td>₹{{ daily_revenue }}</td>
+                    <td>{{ daily_bookings }}</td>
+                </tr>
+
+                <tr>
+                    <td>This Week</td>
+                    <td>₹{{ weekly_revenue }}</td>
+                    <td>{{ weekly_bookings }}</td>
+                </tr>
+
+                <tr>
+                    <td>This Month</td>
+                    <td>₹{{ monthly_revenue }}</td>
+                    <td>{{ monthly_bookings }}</td>
+                </tr>
+
+                <tr>
+                    <td>This Year</td>
+                    <td>₹{{ yearly_revenue }}</td>
+                    <td>{{ yearly_bookings }}</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- SELECTED DATE RANGE -->
+    <!-- ========================= -->
+
+    {% if custom_revenue != None %}
+
+    <div class="dashboard-section">
+
+        <h4 class="section-title">
+            Selected Date Range
+        </h4>
+
+        <div class="selected-result">
+
+            <strong>
+                From {{ from_date }} to {{ to_date }}
+            </strong>
+
+            <br><br>
+
+            Revenue:
+            <strong>
+                ₹{{ custom_revenue }}
+            </strong>
+
+            &nbsp;&nbsp;&nbsp;
+
+            Bookings:
+            <strong>
+                {{ custom_bookings }}
+            </strong>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+
+    <!-- ========================= -->
+    <!-- BOOKING TRENDS -->
+    <!-- ========================= -->
+
+    <div class="dashboard-section">
+
+        <h4 class="section-title">
+            Booking Trends
+        </h4>
+
+        <table class="dashboard-table">
+
+            <thead>
+
+                <tr>
+                    <th>Date</th>
+                    <th>Bookings</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for trend in booking_trends %}
+
+                <tr>
+
+                    <td>
+                        {{ trend.date|date:"d M Y" }}
+                    </td>
+
+                    <td>
+                        {{ trend.count }}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="2">
+                        No booking data available.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- THEATER OCCUPANCY -->
+    <!-- ========================= -->
+
+    <div class="dashboard-section">
+
+        <h4 class="section-title">
+            Theater Occupancy
+        </h4>
+
+        <table class="dashboard-table">
+
+            <thead>
+
+                <tr>
+                    <th>Theater</th>
+                    <th>Total Seats</th>
+                    <th>Booked Seats</th>
+                    <th>Occupancy</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for theater in theater_occupancy %}
+
+                <tr>
+
+                    <td>
+                        {{ theater.name }}
+                    </td>
+
+                    <td>
+                        {{ theater.total_seats }}
+                    </td>
+
+                    <td>
+                        {{ theater.booked_seats }}
+                    </td>
+
+                    <td>
+                        {{ theater.occupancy|floatformat:2 }}%
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="4">
+                        No theater data available.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- MOST BOOKED MOVIES -->
+    <!-- ========================= -->
+
+    <div class="dashboard-section">
+
+        <h4 class="section-title">
+            Most Booked Movies
+        </h4>
+
+        <table class="dashboard-table">
+
+            <thead>
+
+                <tr>
+                    <th>Movie</th>
+                    <th>Bookings</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for movie in most_booked_movies %}
+
+                <tr>
+
+                    <td>
+                        {{ movie.name }}
+                    </td>
+
+                    <td>
+                        {{ movie.booking_count }}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="2">
+                        No booking data available.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- TOP PERFORMING THEATERS -->
+    <!-- ========================= -->
+
+    <div class="dashboard-section">
+
+        <h4 class="section-title">
+            Top Performing Theaters
+        </h4>
+
+        <table class="dashboard-table">
+
+            <thead>
+
+                <tr>
+                    <th>Theater</th>
+                    <th>Bookings</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for theater in top_theaters %}
+
+                <tr>
+
+                    <td>
+                        {{ theater.name }}
+                    </td>
+
+                    <td>
+                        {{ theater.booking_count }}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="2">
+                        No theater data available.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- PEAK BOOKING HOURS -->
+    <!-- ========================= -->
+
+    <div class="dashboard-section">
+
+        <h4 class="section-title">
+            Peak Booking Hours
+        </h4>
+
+        <table class="dashboard-table">
+
+            <thead>
+
+                <tr>
+                    <th>Hour</th>
+                    <th>Bookings</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for hour in peak_booking_hours %}
+
+                <tr>
+
+                    <td>
+                        {{ hour.hour }}:00
+                    </td>
+
+                    <td>
+                        {{ hour.count }}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="2">
+                        No booking data available.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- CANCELLATION & REFUNDS -->
+    <!-- ========================= -->
+
+    <div class="dashboard-section">
+
+        <h4 class="section-title">
+            Cancellation & Refund Statistics
+        </h4>
+
+        <table class="dashboard-table">
+
+            <thead>
+
+                <tr>
+                    <th>Type</th>
+                    <th>Count</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>Cancelled Payments</td>
+                    <td>{{ cancelled_payments }}</td>
+                </tr>
+
+                <tr>
+                    <td>Failed Payments</td>
+                    <td>{{ failed_payments }}</td>
+                </tr>
+
+                <tr>
+                    <td>Refunds</td>
+                    <td>{{ refunded_payments }}</td>
+                </tr>
+
+                <tr>
+                    <td>Refund Amount</td>
+                    <td>₹{{ refund_amount }}</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- USER GROWTH -->
+    <!-- ========================= -->
+
+    <div class="dashboard-section">
+
+        <h4 class="section-title">
+            User Growth
+        </h4>
+
+        <table class="dashboard-table">
+
+            <thead>
+
+                <tr>
+                    <th>Date</th>
+                    <th>New Users</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for user in user_growth %}
+
+                <tr>
+
+                    <td>
+                        {{ user.date|date:"d M Y" }}
+                    </td>
+
+                    <td>
+                        {{ user.count }}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="2">
+                        No user growth data available.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- EXPORT REPORT -->
+    <!-- ========================= -->
+
+    <div class="dashboard-section">
+
+        <h4 class="section-title">
+            Export Report
+        </h4>
+
+        <p>
+            Download booking information for the selected date range.
+        </p>
+
+        <a
+            href="{% url 'export_booking_report' %}?from_date={{ from_date }}&to_date={{ to_date }}"
+            class="export-btn"
+        >
+            Export Booking Report as CSV
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

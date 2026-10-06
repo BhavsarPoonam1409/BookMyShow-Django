@@ -1,0 +1,54 @@
+{% extends "users/basic.html" %}
+
+{% block title %}Ticket Verification{% endblock %}
+
+{% block content %}
+
+<div style="padding: 40px; text-align: center;">
+
+    <h1 style="color: green;">✓ Ticket Verified</h1>
+
+    <div style="
+        background: white;
+        padding: 25px;
+        margin: 20px auto;
+        max-width: 500px;
+        text-align: left;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    ">
+
+        <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+
+        <p><strong>Username:</strong>
+            {{ booking.user.username }}
+        </p>
+
+        <p><strong>Movie:</strong>
+            {{ booking.movie.name }}
+        </p>
+
+        <p><strong>Theater:</strong>
+            {{ booking.theater.name }}
+        </p>
+
+        <p><strong>Screen:</strong>
+            {{ booking.theater.screen }}
+        </p>
+
+        <p><strong>Seat:</strong>
+            {{ booking.seat.seat_number }}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            <span style="color: green;">
+                Valid Booking
+            </span>
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends "users/basic.html" %}
+{% load tz %}
+
+{% block title %}Booking History{% endblock %}
+
+{% block content %}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;   /* gap hatane ke liye */
+        padding: 0;  /* gap hatane ke liye */
+    }
+
+    .content-wrapper {
+        padding: 30px;   /* sirf andar ke content ko spacing milegi */
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    h2 {
+        margin-top: 30px;
+    }
+
+    .card {
+        background: white;
+        padding: 20px;
+        margin: 15px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .card p {
+        margin: 8px 0;
+    }
+
+    .success {
+        color: green;
+        font-weight: bold;
+    }
+
+    .failed {
+        color: red;
+        font-weight: bold;
+    }
+
+    .cancelled {
+        color: orange;
+        font-weight: bold;
+    }
+
+    .empty {
+        background: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .back {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 18px;
+        background-color: #333;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    .download {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 6px 12px;       /* chhoti padding */
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    width: fit-content;      /* 👈 button text ke hisaab se fit hoga */
+    text-align: center;
+    cursor: pointer;
+}
+.download:hover {
+    background-color: #0056b3;
+}
+
+
+
+    .generating {
+        color: #555;
+        font-style: italic;
+    }
+</style>
+
+<div class="content-wrapper">
+    <h1>My Booking History</h1>
+
+    <h2>My Bookings</h2>
+
+    {% if bookings %}
+        {% for booking in bookings %}
+            <div class="card">
+                <p><strong>Username:</strong> {{ booking.user.username }}</p>
+                <p><strong>Movie:</strong> {{ booking.movie.name }}</p>
+                <p><strong>Theater:</strong> {{ booking.theater.name }}</p>
+                <p><strong>Screen:</strong> {{ booking.theater.screen }}</p>
+                <p><strong>Show Time:</strong> {{ booking.theater.time|localtime|date:"d M Y, h:i A" }}</p>
+                <p><strong>Seat:</strong> {{ booking.seat.seat_number }}</p>
+                <p><strong>Booking Date:</strong> {{ booking.booked_at|localtime|date:"d M Y, h:i A" }}</p>
+                <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+
+                {% if booking.ticket %}
+                    <a href="{{ booking.ticket.url }}" class="download" download>Download Ticket</a>
+                {% else %}
+                    <p class="generating">Ticket is being generated...</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty"><p>No bookings found.</p></div>
+    {% endif %}
+
+    <h2>Payment History</h2>
+
+    {% if payments %}
+        {% for payment in payments %}
+            <div class="card">
+                <p><strong>Username:</strong> {{ payment.user.username }}</p>
+                <p><strong>Movie:</strong> {{ payment.theater.movie.name }}</p>
+                <p><strong>Theater:</strong> {{ payment.theater.name }}</p>
+                <p><strong>Amount:</strong> ₹{{ payment.amount }}</p>
+                <p><strong>Status:</strong>
+                    {% if payment.status == 'success' %}
+                        <span class="success">Success</span>
+                    {% elif payment.status == 'failed' %}
+                        <span class="failed">Failed</span>
+                    {% elif payment.status == 'cancelled' %}
+                        <span class="cancelled">Cancelled</span>
+                    {% else %}
+                        {{ payment.status }}
+                    {% endif %}
+                </p>
+                <p><strong>Order ID:</strong> {{ payment.razorpay_order_id }}</p>
+                <p><strong>Payment ID:</strong> {{ payment.razorpay_payment_id|default:"-" }}</p>
+                <p><strong>Transaction ID:</strong> {{ payment.transaction_id|default:"-" }}</p>
+                <p><strong>Date:</strong> {{ payment.created_at|localtime|date:"d M Y, h:i A" }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty"><p>No payment history found.</p></div>
+    {% endif %}
+
+    <a href="{% url 'movie_list' %}" class="back">Back to Movies</a>
+</div>
+
+{% endblock %}

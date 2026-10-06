@@ -1,0 +1,96 @@
+/* Common Responsive CSS */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+
+/* Mobile */
+
+@media (max-width: 430px) {
+
+    .container {
+        width: 100%;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .navbar {
+        padding: 8px 10px;
+    }
+
+    .navbar-brand {
+        font-size: 18px;
+    }
+
+    .navbar-brand img {
+        width: 38px;
+        height: 38px;
+    }
+
+    .section-title {
+        font-size: 20px;
+    }
+
+    .card {
+        max-width: 100%;
+    }
+
+    .card img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+        max-width: 100%;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .footer {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+
+/* Tablet */
+
+@media (min-width: 431px) and (max-width: 991px) {
+
+    .container {
+        width: 100%;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .card {
+        max-width: 100%;
+    }
+
+    .card img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+
+/* Laptop / Desktop */
+
+@media (min-width: 992px) {
+
+    .container {
+        max-width: 1140px;
+    }
+}
