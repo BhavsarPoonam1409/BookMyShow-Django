@@ -14,12 +14,13 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 import os
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / '.env')
 
-import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,6 +38,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'chitchat-endless-busybody.ngrok-free.dev',
+    'bookmyshow-django-faaq.onrender.com',
 ]
 
 
@@ -94,12 +96,23 @@ WSGI_APPLICATION = 'BookMyShow.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.parse(
+        'postgresql://django_bookmyshow_mbyq_user:eyqjPd9YgM1Mz0SuSU7DQQBi1kgK74Ic@dpg-db2eulu7bikc73dhsl10-a/django_bookmyshow_mbyq'
+    )
 }
+
+
+# DATABASES['default'] = dj_database_url.parse(
+#     'postgresql://django_bookmyshow_mbyq_user:eyqjPd9YgM1Mz0SuSU7DQQBi1kgK74Ic@dpg-db2eulu7bikc73dhsl10-a/django_bookmyshow_mbyq'
+# )
 # DATABASES['default'] = dj_database_url.parse('postgresql://django_bookmyshow_user:uF7eu2GnnDbqvUgYswCYpIS5TKTtsAUS@dpg-cshi84o8fa8c739dsme0-a.oregon-postgres.render.com/django_bookmyshow')
 # 
 
