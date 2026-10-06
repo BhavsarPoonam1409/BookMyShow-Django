@@ -2,3 +2,6 @@
 __pycache__/
 *.pyc
 media/tickets/
+backup_data.json
+movies_data.json
+users_data.json
