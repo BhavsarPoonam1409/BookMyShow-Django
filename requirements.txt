@@ -12,3 +12,5 @@ redis
 python-dotenv
 qrcode
 reportlab
+razorpay
+Pillow
