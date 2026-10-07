@@ -1,3 +1,4 @@
+import threading
 from .tasks import generate_and_send_ticket
 import re
 from django.http import JsonResponse, FileResponse
@@ -1731,6 +1732,7 @@ def report_review(request, review_id):
         movie_id=review.movie.id
     )
 
+
 @login_required(login_url='/login/')
 def payment_response(request):
 
@@ -1766,7 +1768,7 @@ def payment_response(request):
                 user=request.user
             )
 
-            # Get seats stored in Payment
+            # Get reserved seats
             selected_seats = []
 
             if payment.reserved_seats:
@@ -1778,6 +1780,8 @@ def payment_response(request):
                 }, status=400)
 
             theater = payment.theater
+
+            bookings_to_generate = []
 
             with transaction.atomic():
 
@@ -1806,12 +1810,7 @@ def payment_response(request):
                         )
 
                         if created:
-                            transaction.on_commit(
-                                lambda booking_id=booking.id:
-                                generate_and_send_ticket(
-                                    booking_id
-                                )
-                            )
+                            bookings_to_generate.append(booking.id)
 
                         continue
 
@@ -1836,17 +1835,10 @@ def payment_response(request):
                             theater=theater
                         )
 
-                        # Generate ticket and send email
-                        # after database transaction is committed
                         if created:
-                            transaction.on_commit(
-                                lambda booking_id=booking.id:
-                                generate_and_send_ticket(
-                                    booking_id
-                                )
-                            )
+                            bookings_to_generate.append(booking.id)
 
-            # Clear session after successful booking
+            # Clear session
             request.session.pop(
                 'reserved_seats',
                 None
@@ -1861,7 +1853,21 @@ def payment_response(request):
                 "Payment successful and booking confirmed."
             )
 
+            # Start ticket generation after the response work is prepared.
+            # This prevents PDF/email processing from blocking payment response.
+            for booking_id in bookings_to_generate:
+
+                thread = threading.Thread(
+                    target=generate_and_send_ticket,
+                    args=(booking_id,)
+                )
+
+                thread.daemon = True
+                thread.start()
+
+            # Return success immediately
             return JsonResponse({
+                'success': True,
                 'message':
                 'Payment successful and booking confirmed.'
             })
@@ -1873,6 +1879,7 @@ def payment_response(request):
             )
 
             return JsonResponse({
+                'success': False,
                 'message':
                 'Payment verification failed.'
             }, status=400)
@@ -1880,14 +1887,30 @@ def payment_response(request):
         except Payment.DoesNotExist:
 
             return JsonResponse({
+                'success': False,
                 'message':
                 'Payment record not found.'
-            }, status=400)
+            }, status=404)
+
+        except Exception as e:
+
+            print(
+                "Payment response error:",
+                str(e)
+            )
+
+            return JsonResponse({
+                'success': False,
+                'message':
+                'Payment confirmation failed.'
+            }, status=500)
 
     return JsonResponse({
-        'message':
-        'Invalid request.'
+        'success': False,
+        'message': 'Invalid request.'
     }, status=400)
+
+
 
 @login_required(login_url='/login/')
 def cancel_payment(request):

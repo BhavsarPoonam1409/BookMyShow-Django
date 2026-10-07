@@ -122,6 +122,7 @@
 let remainingSeconds = Number("{{ remaining_seconds }}");
 
 let timer = document.getElementById("timer");
+
 let payButton = document.getElementById("pay-button");
 
 let timerInterval;
@@ -144,7 +145,8 @@ function updateTimer() {
 
     if (remainingSeconds <= 0) {
 
-        timer.innerHTML = "Reservation Expired";
+        timer.innerHTML =
+            "Reservation Expired";
 
         payButton.disabled = true;
 
@@ -162,10 +164,11 @@ function updateTimer() {
 
 updateTimer();
 
-timerInterval = setInterval(updateTimer, 1000);
+timerInterval =
+    setInterval(updateTimer, 1000);
 
 
-/* PAYMENT */
+/* PAYMENT BUTTON */
 
 payButton.onclick = function() {
 
@@ -185,34 +188,42 @@ payButton.onclick = function() {
 
         handler: function(response) {
 
-            fetch("{% url 'payment_response' %}", {
+            fetch(
+                "{% url 'payment_response' %}",
+                {
+                    method: "POST",
 
-                method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
 
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": "{{ csrf_token }}"
-                },
+                        "X-CSRFToken":
+                            "{{ csrf_token }}"
+                    },
 
-                body: JSON.stringify({
+                    body: JSON.stringify({
 
-                    razorpay_payment_id:
-                        response.razorpay_payment_id,
+                        razorpay_payment_id:
+                            response.razorpay_payment_id,
 
-                    razorpay_order_id:
-                        response.razorpay_order_id,
+                        razorpay_order_id:
+                            response.razorpay_order_id,
 
-                    razorpay_signature:
-                        response.razorpay_signature
+                        razorpay_signature:
+                            response.razorpay_signature
 
-                })
-
-            })
+                    })
+                }
+            )
 
             .then(response => {
 
                 if (!response.ok) {
-                    throw new Error("Payment response failed.");
+
+                    throw new Error(
+                        "Payment response failed."
+                    );
+
                 }
 
                 return response.json();
@@ -225,18 +236,15 @@ payButton.onclick = function() {
                  * PAYMENT SUCCESS
                  */
 
-                if (
-                    data.message &&
-                    data.message
-                        .toLowerCase()
-                        .includes("payment successful")
-                ) {
+                if (data.success === true) {
 
                     /* STOP TIMER */
 
-                    clearInterval(timerInterval);
+                    clearInterval(
+                        timerInterval
+                    );
 
-                    /* SHOW SUCCESS ON PAGE */
+                    /* SHOW CONFIRMED */
 
                     timer.innerHTML =
                         "Booking Confirmed";
@@ -253,11 +261,9 @@ payButton.onclick = function() {
 
                 } else {
 
-                    /* SERVER RESPONSE */
-
                     alert(
                         data.message ||
-                        "Payment could not be confirmed."
+                        "Payment confirmation failed."
                     );
 
                 }
@@ -287,7 +293,8 @@ payButton.onclick = function() {
     };
 
 
-    let razorpay = new Razorpay(options);
+    let razorpay =
+        new Razorpay(options);
 
 
     /* PAYMENT FAILED */
@@ -299,31 +306,40 @@ payButton.onclick = function() {
             let orderId =
                 response.error.metadata.order_id;
 
-            fetch("{% url 'failed_payment' %}", {
+            fetch(
+                "{% url 'failed_payment' %}",
+                {
+                    method: "POST",
 
-                method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
 
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": "{{ csrf_token }}"
-                },
+                        "X-CSRFToken":
+                            "{{ csrf_token }}"
+                    },
 
-                body: JSON.stringify({
+                    body: JSON.stringify({
 
-                    razorpay_order_id:
-                        orderId
+                        razorpay_order_id:
+                            orderId
 
-                })
+                    })
+                }
+            )
 
-            })
-
-            .then(response => response.json())
+            .then(response =>
+                response.json()
+            )
 
             .then(data => {
 
-                clearInterval(timerInterval);
+                clearInterval(
+                    timerInterval
+                );
 
-                payButton.disabled = true;
+                payButton.disabled =
+                    true;
 
                 timer.innerHTML =
                     "Payment Failed";
