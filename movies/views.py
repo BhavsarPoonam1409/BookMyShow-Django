@@ -1808,7 +1808,7 @@ def payment_response(request):
                         if created:
                             transaction.on_commit(
                                 lambda booking_id=booking.id:
-                                generate_and_send_ticket.delay(
+                                generate_and_send_ticket(
                                     booking_id
                                 )
                             )
@@ -1841,7 +1841,7 @@ def payment_response(request):
                         if created:
                             transaction.on_commit(
                                 lambda booking_id=booking.id:
-                                generate_and_send_ticket.delay(
+                                generate_and_send_ticket(
                                     booking_id
                                 )
                             )
