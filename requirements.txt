@@ -5,7 +5,7 @@ gunicorn==20.1.0
 psycopg2-binary
 sqlparse==0.4.4
 typing_extensions==4.7.0
-setuptools
+setuptools==80.9.0
 wheel
 celery
 redis   
@@ -14,4 +14,3 @@ qrcode
 reportlab
 razorpay
 Pillow
-dj-database-url
