@@ -6,9 +6,7 @@
 
     <div class="text-center">
 
-        <h2>
-            Seat Reservation
-        </h2>
+        <h2>Seat Reservation</h2>
 
         <h4 class="mt-3">
             {{ theater.movie.name }}
@@ -21,9 +19,7 @@
 
         <div class="card mt-4 p-4">
 
-            <h5>
-                Your Selected Seats
-            </h5>
+            <h5>Your Selected Seats</h5>
 
             <div class="mt-3">
 
@@ -119,11 +115,14 @@
 
 <script>
 
-let remainingSeconds = Number("{{ remaining_seconds }}");
+let remainingSeconds =
+    Number("{{ remaining_seconds }}");
 
-let timer = document.getElementById("timer");
+let timer =
+    document.getElementById("timer");
 
-let payButton = document.getElementById("pay-button");
+let payButton =
+    document.getElementById("pay-button");
 
 let timerInterval;
 
@@ -144,16 +143,16 @@ let csrfToken =
 
 function updateTimer() {
 
-    let minutes = Math.floor(
-        remainingSeconds / 60
-    );
+    let minutes =
+        Math.floor(remainingSeconds / 60);
 
-    let seconds = remainingSeconds % 60;
+    let seconds =
+        remainingSeconds % 60;
 
     timer.innerHTML =
-        String(minutes).padStart(2, '0')
+        String(minutes).padStart(2, "0")
         + ":"
-        + String(seconds).padStart(2, '0');
+        + String(seconds).padStart(2, "0");
 
     if (remainingSeconds <= 0) {
 
@@ -186,6 +185,12 @@ timerInterval =
 
 payButton.onclick = function() {
 
+    /*
+     * Prevent double click
+     */
+    payButton.disabled = true;
+
+
     let options = {
 
         key: "{{ razorpay_key_id }}",
@@ -196,9 +201,11 @@ payButton.onclick = function() {
 
         name: "BookMyShow",
 
-        description: "Movie Ticket Booking",
+        description:
+            "Movie Ticket Booking",
 
-        order_id: "{{ razorpay_order_id }}",
+        order_id:
+            "{{ razorpay_order_id }}",
 
 
         /* =========================
@@ -207,25 +214,29 @@ payButton.onclick = function() {
 
         handler: function(response) {
 
+            /*
+             * Send payment confirmation
+             * to Django.
+             */
             fetch(
                 "{% url 'payment_response' %}",
                 {
                     method: "POST",
 
-                    /*
-                     * IMPORTANT:
-                     * Keep the logged-in user's
-                     * session/cookie with the request.
-                     * This helps mobile browsers.
-                     */
                     credentials: "same-origin",
 
+                    mode: "same-origin",
+
                     headers: {
+
                         "Content-Type":
                             "application/json",
 
                         "X-CSRFToken":
-                            csrfToken
+                            csrfToken,
+
+                        "Accept":
+                            "application/json"
                     },
 
                     body: JSON.stringify({
@@ -243,25 +254,20 @@ payButton.onclick = function() {
                 }
             )
 
-            .then(response => {
+            .then(function(response) {
 
                 if (!response.ok) {
 
                     throw new Error(
-                        "Payment response failed."
+                        "Payment confirmation failed."
                     );
-
                 }
 
                 return response.json();
 
             })
 
-            .then(data => {
-
-                /* =========================
-                   BOOKING SUCCESS
-                ========================= */
+            .then(function(data) {
 
                 if (data.success === true) {
 
@@ -281,9 +287,10 @@ payButton.onclick = function() {
 
 
                     /*
-                     * DISABLE PAYMENT BUTTON
+                     * KEEP PAYMENT BUTTON DISABLED
                      */
-                    payButton.disabled = true;
+                    payButton.disabled =
+                        true;
 
 
                     /*
@@ -293,7 +300,15 @@ payButton.onclick = function() {
                         "Payment successful! Your booking has been confirmed."
                     );
 
+
                 } else {
+
+                    /*
+                     * Payment reached server
+                     * but confirmation failed.
+                     */
+                    payButton.disabled =
+                        false;
 
                     alert(
                         data.message ||
@@ -304,16 +319,31 @@ payButton.onclick = function() {
 
             })
 
-            .catch(error => {
+            .catch(function(error) {
 
                 console.error(
                     "Payment confirmation error:",
                     error
                 );
 
+
+                /*
+                 * Payment may have succeeded
+                 * but confirmation request failed.
+                 */
                 alert(
-                    "Payment was completed, but booking confirmation failed. Please check Booking History."
+                    "Payment was successful, but booking confirmation is still processing. Please check Booking History."
                 );
+
+
+                /*
+                 * Do NOT reload here.
+                 *
+                 * This prevents losing the current
+                 * payment/session state.
+                 */
+                payButton.disabled =
+                    true;
 
             });
 
@@ -325,11 +355,17 @@ payButton.onclick = function() {
         ========================= */
 
         theme: {
+
             color: "#3399cc"
+
         }
 
     };
 
+
+    /* =========================
+       CREATE RAZORPAY
+    ========================= */
 
     let razorpay =
         new Razorpay(options);
@@ -340,7 +376,7 @@ payButton.onclick = function() {
     ========================= */
 
     razorpay.on(
-        'payment.failed',
+        "payment.failed",
         function(response) {
 
             let orderId =
@@ -352,17 +388,22 @@ payButton.onclick = function() {
                 {
                     method: "POST",
 
-                    /*
-                     * Keep session with request
-                     */
-                    credentials: "same-origin",
+                    credentials:
+                        "same-origin",
+
+                    mode:
+                        "same-origin",
 
                     headers: {
+
                         "Content-Type":
                             "application/json",
 
                         "X-CSRFToken":
-                            csrfToken
+                            csrfToken,
+
+                        "Accept":
+                            "application/json"
                     },
 
                     body: JSON.stringify({
@@ -374,11 +415,13 @@ payButton.onclick = function() {
                 }
             )
 
-            .then(response =>
-                response.json()
-            )
+            .then(function(response) {
 
-            .then(data => {
+                return response.json();
+
+            })
+
+            .then(function(data) {
 
                 clearInterval(
                     timerInterval
@@ -397,12 +440,15 @@ payButton.onclick = function() {
 
             })
 
-            .catch(error => {
+            .catch(function(error) {
 
                 console.error(
                     "Payment failed:",
                     error
                 );
+
+                payButton.disabled =
+                    false;
 
                 alert(
                     "Payment failed, but something went wrong while updating the booking."
