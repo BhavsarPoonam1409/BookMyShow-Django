@@ -122,13 +122,12 @@ WSGI_APPLICATION = 'BookMyShow.wsgi.application'
 #     )
 # }
 
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-
-
-if os.environ.get("VERCEL_ENV") == "production":
+if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(
-            default=os.environ.get("DATABASE_URL")
+            default=DATABASE_URL
         )
     }
 else:
@@ -137,6 +136,21 @@ else:
             default='sqlite:///' + str(BASE_DIR / 'db.sqlite3')
         )
     }
+
+
+
+# if os.environ.get("VERCEL_ENV") == "production":
+#     DATABASES = {
+#         'default': dj_database_url.config(
+#             default=os.environ.get("DATABASE_URL")
+#         )
+#     }
+# else:
+#     DATABASES = {
+#         'default': dj_database_url.config(
+#             default='sqlite:///' + str(BASE_DIR / 'db.sqlite3')
+#         )
+#     }
 
 
 # DATABASES['default'] = dj_database_url.parse(
