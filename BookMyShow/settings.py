@@ -116,11 +116,27 @@ WSGI_APPLICATION = 'BookMyShow.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3')
-    )
-}
+# DATABASES = {
+#     'default': dj_database_url.parse(
+#         'postgresql://django_bookmyshow_mbyq_user:eyqjPd9YgM1Mz0SuSU7DQQBi1kgK74Ic@dpg-db2eulu7bikc73dhsl10-a.ohio-postgres.render.com/django_bookmyshow_mbyq'
+#     )
+# }
+
+
+
+
+if os.environ.get("VERCEL_ENV") == "production":
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get("DATABASE_URL")
+        )
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default='sqlite:///' + str(BASE_DIR / 'db.sqlite3')
+        )
+    }
 
 
 # DATABASES['default'] = dj_database_url.parse(
