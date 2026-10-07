@@ -14,3 +14,4 @@ qrcode
 reportlab
 razorpay
 Pillow
+whitenoise
