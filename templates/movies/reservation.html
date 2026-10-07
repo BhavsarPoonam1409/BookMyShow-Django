@@ -1,4 +1,3 @@
-
 {% extends "users/basic.html" %}
 
 {% block content %}
@@ -57,6 +56,7 @@
             </p>
 
             <button
+                type="button"
                 id="pay-button"
                 class="btn btn-success btn-lg mt-3"
             >
@@ -128,7 +128,19 @@ let payButton = document.getElementById("pay-button");
 let timerInterval;
 
 
-/* TIMER */
+/* =========================
+   CSRF TOKEN
+========================= */
+
+let csrfToken =
+    document.querySelector(
+        '[name=csrfmiddlewaretoken]'
+    ).value;
+
+
+/* =========================
+   TIMER
+========================= */
 
 function updateTimer() {
 
@@ -168,7 +180,9 @@ timerInterval =
     setInterval(updateTimer, 1000);
 
 
-/* PAYMENT BUTTON */
+/* =========================
+   PAYMENT BUTTON
+========================= */
 
 payButton.onclick = function() {
 
@@ -186,6 +200,11 @@ payButton.onclick = function() {
 
         order_id: "{{ razorpay_order_id }}",
 
+
+        /* =========================
+           PAYMENT SUCCESS
+        ========================= */
+
         handler: function(response) {
 
             fetch(
@@ -193,12 +212,20 @@ payButton.onclick = function() {
                 {
                     method: "POST",
 
+                    /*
+                     * IMPORTANT:
+                     * Keep the logged-in user's
+                     * session/cookie with the request.
+                     * This helps mobile browsers.
+                     */
+                    credentials: "same-origin",
+
                     headers: {
                         "Content-Type":
                             "application/json",
 
                         "X-CSRFToken":
-                            "{{ csrf_token }}"
+                            csrfToken
                     },
 
                     body: JSON.stringify({
@@ -232,29 +259,36 @@ payButton.onclick = function() {
 
             .then(data => {
 
-                /*
-                 * PAYMENT SUCCESS
-                 */
+                /* =========================
+                   BOOKING SUCCESS
+                ========================= */
 
                 if (data.success === true) {
 
-                    /* STOP TIMER */
-
+                    /*
+                     * STOP TIMER
+                     */
                     clearInterval(
                         timerInterval
                     );
 
-                    /* SHOW CONFIRMED */
 
+                    /*
+                     * SHOW CONFIRMED
+                     */
                     timer.innerHTML =
                         "Booking Confirmed";
 
-                    /* DISABLE PAYMENT BUTTON */
 
+                    /*
+                     * DISABLE PAYMENT BUTTON
+                     */
                     payButton.disabled = true;
 
-                    /* SUCCESS POPUP */
 
+                    /*
+                     * SUCCESS MESSAGE
+                     */
                     alert(
                         "Payment successful! Your booking has been confirmed."
                     );
@@ -286,6 +320,10 @@ payButton.onclick = function() {
         },
 
 
+        /* =========================
+           RAZORPAY THEME
+        ========================= */
+
         theme: {
             color: "#3399cc"
         }
@@ -297,7 +335,9 @@ payButton.onclick = function() {
         new Razorpay(options);
 
 
-    /* PAYMENT FAILED */
+    /* =========================
+       PAYMENT FAILED
+    ========================= */
 
     razorpay.on(
         'payment.failed',
@@ -306,17 +346,23 @@ payButton.onclick = function() {
             let orderId =
                 response.error.metadata.order_id;
 
+
             fetch(
                 "{% url 'failed_payment' %}",
                 {
                     method: "POST",
+
+                    /*
+                     * Keep session with request
+                     */
+                    credentials: "same-origin",
 
                     headers: {
                         "Content-Type":
                             "application/json",
 
                         "X-CSRFToken":
-                            "{{ csrf_token }}"
+                            csrfToken
                     },
 
                     body: JSON.stringify({
@@ -368,6 +414,10 @@ payButton.onclick = function() {
     );
 
 
+    /* =========================
+       OPEN RAZORPAY
+    ========================= */
+
     razorpay.open();
 
 };
@@ -375,4 +425,3 @@ payButton.onclick = function() {
 </script>
 
 {% endblock %}
-
