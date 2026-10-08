@@ -96,11 +96,6 @@ The project also includes a Django admin panel for managing movies, theaters, sh
 
 Admin credentials are provided separately in the internship project report for evaluation.
 
-## Live Project
-
-Live project:
-https://bookmyshow-django-faaq.onrender.com/
-
 ## Internship Project
 
 This project was developed as part of the **Full Stack Web Development Internship at ElevanceSkills**.
