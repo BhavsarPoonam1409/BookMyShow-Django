@@ -49,6 +49,7 @@ BookMyShow/
 │
 ├── BookMyShow/
 ├── movies/
+├── media/
 ├── users/
 ├── templates/
 ├── static/
