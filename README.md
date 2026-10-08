@@ -36,7 +36,7 @@ You can open the website directly and test the movie booking flow.
 * CSS
 * JavaScript
 * Bootstrap
-* MySQL / PostgreSQL
+* Sqlite3 / PostgreSQL
 * Razorpay
 * Celery
 * Redis
