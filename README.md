@@ -49,9 +49,7 @@ BookMyShow/
 │
 ├── BookMyShow/
 ├── movies/
-├── booking/
-├── seat/
-├── theater/
+├── users/
 ├── templates/
 ├── static/
 ├── manage.py
